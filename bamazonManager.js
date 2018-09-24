@@ -151,7 +151,7 @@ function displayMenu(){
         {
             type: "list",
             message: "Choose an action:", 
-            choices: ["View Products for Sale", 'View Low Inventory', 'Add to Inventory', 'Add New Product'],
+            choices: ["View Products for Sale", 'View Low Inventory', 'Add to Inventory', 'Add New Product', 'Exit'],
             name: "menu"
         }
     ]).then(function(response){
@@ -169,6 +169,9 @@ function displayMenu(){
             break;
             case "Add New Product":
                 addNewProduct();
+            break;
+            case "Exit":
+                connection.end();
             break;
         }
 

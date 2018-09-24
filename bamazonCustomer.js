@@ -72,8 +72,9 @@ function placeOrder(inputId, quantity){
     else{
         if(quantity <= desiredProduct.stock){
             desiredProduct.stock -= quantity;
+            desiredProduct.product_sales += quantity*desiredProduct.price;
             log("Your order has been placed!");
-            uploadData(desiredProduct.stock, desiredProduct.id);
+            uploadData(desiredProduct.stock, desiredProduct.id, desiredProduct.product_sales);
         }
         else{
             log("Insufficient Quantity");
@@ -82,10 +83,11 @@ function placeOrder(inputId, quantity){
     }
 }
 
-function uploadData(stock, id){
+function uploadData(stock, id, sales){
     var query = connection.query(
-        "UPDATE products SET stock = ? WHERE id = ?", [stock, id],
+        "UPDATE products SET stock = ?, product_sales = ? WHERE id = ?", [stock, sales, id],
         function(err, res){
+            if(err) throw err;
             log("Updated"); 
             promptNewOrder();
         }
