@@ -62,7 +62,7 @@ UPDATE products SET stock = ? WHERE id = ?;
 
 SELECT * FROM products;
 
-SELECT departments.id, dept, overhead_cost, SUM(product_sales) as dept_sales FROM products INNER JOIN departments ON products.dept = departments.name GROUP BY dept ORDER BY departments.id;
+SELECT departments.id, departments.name, overhead_cost, SUM(product_sales) as dept_sales FROM departments LEFT JOIN products ON products.dept = departments.name GROUP BY departments.name ORDER BY departments.id;
 
 
 

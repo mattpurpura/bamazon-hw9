@@ -2,6 +2,7 @@ var inquirer = require("inquirer");
 var mysql  = require("mysql");
 var chalk = require("chalk");
 const log = console.log;
+var Table = require("cli-table");
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -30,13 +31,20 @@ function downloadData(){
 }
 
 function displayItems(){
-    for(let i=0; i<productsForSale.length; i++){
-        log(chalk.blue("Product ID: " + productsForSale[i].id));
-        log(chalk.yellow(productsForSale[i].name));
-        log(chalk.red("$"+productsForSale[i].price));
-        log(chalk.green("Stock: " + productsForSale[i].stock));
-        log("---------------");
+
+    let products = new Table({
+        head: ["Product ID", 'Product Name', 'Inventory']
+    });
+
+    for(let i=0; i < productsForSale.length; i++){
+        let productName = productsForSale[i].name;
+        let productID = productsForSale[i].id;
+        let stock = productsForSale[i].stock;
+        deptTable.push(
+        [productName, productID, stock]
+    )
     }
+    log(products.toString());
 }
 
 function displayLowInventory(){
@@ -51,8 +59,29 @@ function displayLowInventory(){
             log("---------------");
         }
     }
+
+    let inventory = new Table({
+        head: ["Product ID", 'Product Name', 'Price', 'Inventory']
+    });
+
+    for(let i=0; i < productsForSale.length; i++){
+        if(productsForSale[i].stock < 5){
+            inventoryLow = true;
+        let productName = productsForSale[i].name;
+        let productID = productsForSale[i].id;
+        let stock = productsForSale[i].stock;
+        let price = productsForSale[i].price;
+        inventory.push(
+        [productName, productID, price, stock]
+    )
+        }
+    }
+    
     if(inventoryLow === false){
         log("No products have low inventory!")
+    }
+    else{
+        log(inventory.toString());
     }
 }
 

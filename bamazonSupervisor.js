@@ -24,7 +24,7 @@ inquirer.prompt([
     {
         type: "list", 
         message: "What would you like to do?", 
-        choices: ["View product sales by dept", 'Create new department'], 
+        choices: ["View product sales by dept", 'Create new department', 'Exit'], 
         name: "action"
     }
 ]).then(function(response){
@@ -35,16 +35,18 @@ inquirer.prompt([
         case "Create new department":
             addNewDepartment();
         break;
+        case "Exit":
+            connection.end();
+        break;
     }
 })
 }
 
 function grabDeptData(){
     var query = connection.query(
-        "SELECT departments.id, departments.name, overhead_cost, SUM(product_sales) as dept_sales FROM departments LEFT JOIN products ON products.dept = departments.name GROUP BY dept ORDER BY departments.id", 
+        "SELECT departments.id, departments.name, overhead_cost, SUM(product_sales) as dept_sales FROM departments LEFT JOIN products ON products.dept = departments.name GROUP BY departments.name ORDER BY departments.id", 
         function(err, res){
-            log(res);
-            var deptTable = new Table({
+            let deptTable = new Table({
                 head: ["Dept_ID", 'Dept_Name', 'Overhead_Cost', 'Dept_Sales', 'Dept_Profit']
             });
 
@@ -63,8 +65,10 @@ function grabDeptData(){
             )
             }
             log(deptTable.toString());
+            setTimeout(runSupervisor, 1000);
         }
     )
+    
 }
 
 function createDepartment(name, cost){
@@ -74,6 +78,7 @@ function createDepartment(name, cost){
         function(err, res){
             if (err) throw err;
             log("Dept Created")
+            setTimeout(runSupervisor, 1000);
         }   
     )
 }

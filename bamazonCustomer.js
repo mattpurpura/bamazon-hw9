@@ -2,6 +2,7 @@ var inquirer = require("inquirer");
 var mysql  = require("mysql");
 var chalk = require("chalk");
 const log = console.log;
+var Table = require('cli-table');
 
 var connection = mysql.createConnection({
     host: "localhost",
@@ -13,7 +14,6 @@ var connection = mysql.createConnection({
 
   connection.connect(function(err){
     if(err) throw err;
-    log("Connected as id"+connection.threadId + "\n");
     updateTable();
 })
 
@@ -30,12 +30,20 @@ function updateTable(){
 }
 
 function displayItems(){
-    for(let i=0; i< productsForSale.length; i++){
-        log(chalk.yellow(productsForSale[i].name));
-        log(chalk.red("$"+productsForSale[i].price));
-        log(chalk.green("Product ID: " + productsForSale[i].id));
-        log("---------------");
+    let products = new Table({
+        head: ["Product ID", 'Name', 'Price']
+    });
+
+    for(let i=0; i < productsForSale.length; i++){
+        let productName = productsForSale[i].name;
+        let productID = productsForSale[i].id;
+        let productPrice = productsForSale[i].price;
+
+        products.push(
+        [productID, productName, productPrice]
+    )
     }
+    log(products.toString());
 }
 
 function promptCreateOrder(){
@@ -73,7 +81,7 @@ function placeOrder(inputId, quantity){
         if(quantity <= desiredProduct.stock){
             desiredProduct.stock -= quantity;
             desiredProduct.product_sales += quantity*desiredProduct.price;
-            log("Your order has been placed!");
+            log("Your order of "+quantity+" "+desiredProduct.name+" for $"+desiredProduct.product_sales+" has been placed!");
             uploadData(desiredProduct.stock, desiredProduct.id, desiredProduct.product_sales);
         }
         else{
