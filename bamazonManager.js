@@ -40,7 +40,7 @@ function displayItems(){
         let productName = productsForSale[i].name;
         let productID = productsForSale[i].id;
         let stock = productsForSale[i].stock;
-        deptTable.push(
+        products.push(
         [productName, productID, stock]
     )
     }
